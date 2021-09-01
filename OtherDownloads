@@ -1,0 +1,6 @@
+Apart from packages at SYSTEM level and at Virtual Environment level, we need to download pre-trained model EAST Detector for Text Detection :
+OpenCV’s EAST(Efficient and Accurate Scene Text Detection ) text detector is a deep learning model. OpenCV’s text detector implementation of EAST 
+is quite robust, capable of localizing text even when it’s blurred, reflective, or partially obscured.
+
+Pre-trained model can be downloaded at:
+https://raw.githubusercontent.com/oyyd/frozen_east_text_detection.pb/master/frozen_east_text_detection.pb
