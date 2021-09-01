@@ -1,5 +1,4 @@
-# USAGE 
-# python3 main.py --image test/pic1.jpg --east frozen_east_text_detection.pb
+# USAGE : python3 main.py --image test/pic1.jpg --east frozen_east_text_detection.pb
 
 # import the necessary packages
 from imutils.object_detection import non_max_suppression
@@ -7,6 +6,7 @@ import numpy as np
 import argparse
 import time
 import cv2
+import pytesseract
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -66,6 +66,7 @@ print("[INFO] text detection took {:.6f} seconds".format(end - start))
 (numRows, numCols) = scores.shape[2:4]
 rects = []
 confidences = []
+results = []
 
 # loop over the number of rows
 for y in range(0, numRows):
@@ -125,9 +126,20 @@ for (startX, startY, endX, endY) in boxes:
     endX = int(endX * rW)
     endY = int(endY * rH)
 
-    # draw the bounding box on the image
-    cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+    r = orig[startY:endY, startX:endX]
 
-# show the output image
-cv2.imshow("Text Detection", orig)
+#configuration settings to convert image to string
+    configuration = ("-l eng --oem 1 --psm 8")
+    text = pytesseract.image_to_string(r, config=configuration)
+    results.append(((startX, startY, endX, endY), text))
+    orig_image = orig.copy()
+    for ((startX, startY, endX, endY), text) in results:
+        print("{}\n". format(text))
+        text="".join([x if ord(x) < 128 else "" for x in text]).strip()
+# draw the bounding box on the image
+        cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+        cv2.putText(orig_image, text, (startX, startY - 30),
+		    cv2.FONT_HERSHEY_SIMPLEX, 0.7,(0,0, 255), 2)
+
+cv2.imshow('Text Detection', orig_image)
 cv2.waitKey(0)
